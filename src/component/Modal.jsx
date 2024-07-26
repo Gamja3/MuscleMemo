@@ -174,7 +174,7 @@ const Modal = ({ modalOpen, addExercise }) => {
                         />
                     </InputWrap> */}
                 </div>
-                <Button onClick={handleAddExercise}>운동 추가</Button>
+                <Button onClick={handleAddExercise}>운동 추가1</Button>
                 <Button className="modal-close-btn" onClick={handleClose}>
                     취소
                 </Button>
