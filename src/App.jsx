@@ -1,7 +1,6 @@
 // App.jsx
 import React, { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import Footer from "./component/Footer";
 import Main from "./pages/Main";
 import Login from "./pages/Login";
@@ -10,7 +9,6 @@ import Record from "./pages/Record";
 import SignUp from "./pages/SignUp";
 import Header from "./component/Header";
 import { auth, onAuthStateChanged } from "./firebase";
-import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
 function App() {
@@ -19,6 +17,7 @@ function App() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        console.log("app.jsx useEffect");
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
                 setIsLoggedIn(true);
@@ -31,12 +30,10 @@ function App() {
 
         // Cleanup subscription on unmount
         return () => unsubscribe();
-    }, [navigate]);
+    }, []);
 
     return (
-        
         <>
-            <ToastContainer />
             {isLoggedIn && <Header displayName={displayName} />}
             <Routes>
                 <Route path="/" element={isLoggedIn ? <Main /> : <Login />} />
@@ -49,7 +46,7 @@ function App() {
                     path="/record"
                     element={isLoggedIn ? <Record /> : <Login />}
                 />
-                <Route path="/SignUp" element={<SignUp />} />
+                <Route path="/signup" element={<SignUp />} />
             </Routes>
             <Footer />
         </>

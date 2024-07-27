@@ -5,8 +5,30 @@ import {
     GoogleAuthProvider,
     GithubAuthProvider,
 } from "firebase/auth"; // Firebase import
-import { useNavigate } from "react-router-dom"; // Assuming you are using react-router-dom for navigation
+import { useNavigate, Link } from "react-router-dom"; // Assuming you are using react-router-dom for navigation
 import { auth } from "../firebase"; // Firebase 초기화 설정 가져오기
+import styled from "styled-components";
+
+const Container = styled.div`
+    border: 1px solid white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 90vh;
+`;
+const ButtonContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+`;
+
+const ButtonSNS = styled.button`
+    border: 1px solid white;
+    width: 100px;
+    height: 50px;
+`;
 
 const SignIn = () => {
     const [email, setEmail] = useState("");
@@ -46,14 +68,13 @@ const SignIn = () => {
         e.preventDefault();
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            // toast.success("로그인에 성공하였습니다."); // Uncomment if you are using toast notifications
             navigate("/"); // Navigate to home page on successful sign-in
         } catch (error) {
-            // toast.error(error?.code); // Uncomment if you are using toast notifications
             console.log(error);
             setError("로그인에 실패했습니다. 다시 시도해주세요.");
         }
     };
+
     const onSocialClick = async (event) => {
         const {
             target: { name },
@@ -61,63 +82,26 @@ const SignIn = () => {
         let provider;
         if (name === "google") {
             provider = new GoogleAuthProvider();
-            const data = await signInWithPopup(auth, provider)
-                .then((result) => {
-                    // This gives you a Google Access Token. You can use it to access the Google API.
-                    const credential =
-                        GoogleAuthProvider.credentialFromResult(result);
-                    const token = credential.accessToken;
-                    // The signed-in user info.
-                    const user = result.user;
-                    // IdP data available using getAdditionalUserInfo(result)
-                    // ...
-                })
-                .catch((error) => {
-                    // Handle Errors here.
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    // The email of the user's account used.
-                    const email = error.customData.email;
-                    // The AuthCredential type that was used.
-                    const credential =
-                        GoogleAuthProvider.credentialFromError(error);
-                    // ...
-                    console.log(errorCode, errorMessage, email);
-                });
-            navigate("/");
         } else if (name === "github") {
             provider = new GithubAuthProvider();
-            const data = await signInWithPopup(auth, provider)
-                .then((result) => {
-                    // This gives you a Google Access Token. You can use it to access the Google API.
-                    const credential =
-                        GithubAuthProvider.credentialFromResult(result);
-                    const token = credential.accessToken;
-                    // The signed-in user info.
-                    const user = result.user;
-                    // IdP data available using getAdditionalUserInfo(result)
-                    // ...
-                })
-                .catch((error) => {
-                    // Handle Errors here.
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    // The email of the user's account used.
-                    const email = error.customData.email;
-                    // The AuthCredential type that was used.
-                    const credential =
-                        GithubAuthProvider.credentialFromError(error);
-                    // ...
-                    console.log(errorCode, errorMessage, email);
-                });
-            navigate("/");
         }
 
-        // console.log(data);
+        try {
+            await signInWithPopup(auth, provider);
+            navigate("/");
+        } catch (error) {
+            console.log(error);
+            setError("소셜 로그인에 실패했습니다. 다시 시도해주세요.");
+        }
+    };
+
+    const onClickSignUp = () => {
+        console.log("onClickSignUp");
+        navigate("/signup");
     };
 
     return (
-        <div>
+        <Container>
             <form onSubmit={onSubmit}>
                 <input
                     type="text"
@@ -135,14 +119,19 @@ const SignIn = () => {
                 />
                 {error && <p style={{ color: "red" }}>{error}</p>}
                 <button type="submit">로그인하기</button>
-                <button name="google" onClick={onSocialClick}>
-                    구글
-                </button>
-                <button name="github" onClick={onSocialClick}>
-                    깃허브
-                </button>
             </form>
-        </div>
+            <button onClick={onClickSignUp}>
+                <div>회원가입</div>
+            </button>
+            <ButtonContainer>
+                <ButtonSNS name="google" onClick={onSocialClick}>
+                    구글
+                </ButtonSNS>
+                <ButtonSNS name="github" onClick={onSocialClick}>
+                    깃허브
+                </ButtonSNS>
+            </ButtonContainer>
+        </Container>
     );
 };
 

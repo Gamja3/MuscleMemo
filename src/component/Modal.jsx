@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef } from "react";
 import styled from "styled-components";
 
 const exercisesData = {
@@ -9,7 +9,7 @@ const exercisesData = {
 };
 
 const ModalBackground = styled.div`
-    /* position: fixed;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -17,23 +17,20 @@ const ModalBackground = styled.div`
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
-    align-items: center; */
+    align-items: center;
 `;
 
 const ModalContent = styled.div`
     background: white;
     padding: 20px;
     border-radius: 8px;
-    /* width: 300px; */
     text-align: left;
-    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); */
 `;
 
 const ModalTitle = styled.p`
     font-size: 1.5em;
     margin-bottom: 10px;
     padding-bottom: 10px;
-    border-bottom: 5px solid #f1f2f4;
 `;
 
 const Select = styled.select`
@@ -68,28 +65,64 @@ const Button = styled.button`
         background-color: #0056b3;
     }
 `;
+
 const InputWrap = styled.div`
     display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+`;
+
+const SetAdd = styled.div`
+    /* width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer; */
+`;
+
+const SetBtn = styled.button`
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #525252;
+    color: white;
+    cursor: pointer;
+    font-weight: 800;
+
+    &:hover {
+        background-color: #000000;
+    }
 `;
 
 const Modal = ({ modalOpen, addExercise }) => {
     const modalBackground = useRef();
     const [selectedPart, setSelectedPart] = useState("");
     const [selectedExercise, setSelectedExercise] = useState("");
-    const [weight, setWeight] = useState("");
-    const [set, setSet] = useState("");
-
+    const [sets, setSets] = useState([
+        { weight: "", times: "" },
+        { weight: "", times: "" },
+        { weight: "", times: "" },
+        { weight: "", times: "" },
+    ]);
     const handleClose = () => {
         modalOpen(false); // 부모 컴포넌트로 모달 닫기 신호 전달
     };
 
     const handleAddExercise = () => {
-        if (selectedPart && selectedExercise && weight && set) {
+        if (
+            selectedPart &&
+            selectedExercise &&
+            sets.every((set) => set.weight && set.times)
+        ) {
             addExercise({
                 part: selectedPart,
                 exercise: selectedExercise,
-                weight,
-                set,
+                sets,
             });
             handleClose();
         } else {
@@ -97,12 +130,21 @@ const Modal = ({ modalOpen, addExercise }) => {
         }
     };
 
+    const handleSetChange = (index, field, value) => {
+        const newSets = [...sets];
+        newSets[index][field] = value;
+        setSets(newSets);
+    };
+
+    const handleAddSet = () => {
+        setSets([...sets, { weight: "", times: "" }]);
+    };
     return (
         <ModalBackground
             ref={modalBackground}
             onClick={(e) => {
                 if (e.target === modalBackground.current) {
-                    // handleClose();
+                    handleClose();
                 }
             }}
         >
@@ -136,45 +178,45 @@ const Modal = ({ modalOpen, addExercise }) => {
                         ))}
                 </Select>
                 <div>
-                    <button>세트추가</button>
-                    <InputWrap>
-                        <Input
-                            type="text"
-                            placeholder="무게"
-                            value={weight}
-                            maxLength={4}
-                            onChange={(e) => setWeight(e.target.value)}
-                        />
-                        <div>kg </div>
-                        {/* <div>1세트</div>
-                        <button>1세트</button> */}
-                        <Input
-                            type="text"
-                            placeholder="세트"
-                            value={set}
-                            maxLength={4}
-                            onChange={(e) => setSet(e.target.value)}
-                        />
-                        <div>1 세트</div>
-                    </InputWrap>
-                    {/* <InputWrap>
-                        <Input
-                            type="text"
-                            placeholder="무게"
-                            value={weight}
-                            maxLength={4}
-                            onChange={(e) => setWeight(e.target.value)}
-                        />
-                        <Input
-                            type="text"
-                            placeholder="세트"
-                            value={set}
-                            maxLength={4}
-                            onChange={(e) => setSet(e.target.value)}
-                        />
-                    </InputWrap> */}
+                    {sets.map((set, index) => (
+                        <InputWrap key={index}>
+                            <div>{index + 1}세트 </div>
+                            <Input
+                                type="text"
+                                placeholder="무게"
+                                value={set.weight}
+                                maxLength={4}
+                                onChange={(e) =>
+                                    handleSetChange(
+                                        index,
+                                        "weight",
+                                        e.target.value
+                                    )
+                                }
+                            />
+                            <div>kg </div>
+                            <Input
+                                type="text"
+                                placeholder="횟수"
+                                value={set.times}
+                                maxLength={4}
+                                onChange={(e) =>
+                                    handleSetChange(
+                                        index,
+                                        "times",
+                                        e.target.value
+                                    )
+                                }
+                            />
+                            <div>회</div>
+                        </InputWrap>
+                    ))}
+
+                    <SetAdd>
+                        <SetBtn onClick={handleAddSet}>세트 추가</SetBtn>
+                    </SetAdd>
                 </div>
-                <Button onClick={handleAddExercise}>운동 추가1</Button>
+                <Button onClick={handleAddExercise}>운동 추가</Button>
                 <Button className="modal-close-btn" onClick={handleClose}>
                     취소
                 </Button>

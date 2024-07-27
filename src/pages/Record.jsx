@@ -6,15 +6,16 @@ import Modal from "../component/Modal";
 
 const Container2 = styled.div`
     width: 100%;
-    height: 90vh;
+    /* height: 90vh; */
     display: flex;
     flex-direction: column;
+    margin-bottom: 100px;
     /* background-color: #132229; */
     /* padding-bottom: 24px; */
 `;
 const Container = styled.div`
     width: 100%;
-    height: 500px;
+    /* height: 500px; */
     display: flex;
     flex-direction: column;
     /* background-color: #132229; */
@@ -66,10 +67,11 @@ const Record = memo(() => {
 
     useEffect(() => {
         console.log(new Date());
-    }, []);
+        console.log(exercises);
+    }, [exercises]);
 
     const addExercise = (exerciseData) => {
-        console.log(clickedDate);
+        console.log(exerciseData);
         setExercises((prevExercises) => {
             const dateKey = clickedDate.toISOString().split("T")[0]; // YYYY-MM-DD
             const exercisesForDate = prevExercises[dateKey] || [];
@@ -119,7 +121,7 @@ const Record = memo(() => {
                                         {exercise.exercise}
                                     </ExerciseInfo>
                                     <ExerciseInfo>
-                                        {exercise.weight} kg
+                                        {exercise.sets.length} 세트
                                     </ExerciseInfo>
                                 </ExerciseItem>
                             ))}
